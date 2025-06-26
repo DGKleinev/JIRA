@@ -20,14 +20,14 @@ UserSearchParams usp = userSearchBuilder.allowEmptyQuery(true)
         .build()
 
 String match_query = "@domain.com"
-List <ApplicationUser> igt_users = uss.findUsers( match_query, usp)
+List <ApplicationUser> users = uss.findUsers( match_query, usp)
 List <String> notIncluded = Arrays.asList( "devnull@operations-domain.com", "null@domain.com", "devnull@domain.com", "devnull@domain-operations.com" )
 List <String> emails = new ArrayList <String> ()
-for( ApplicationUser user : igt_users ){
+for( ApplicationUser user : users ){
     String currentEmail = user.getEmailAddress().toLowerCase()
     def directory = user.getDirectoryId()
     log.warn( "${currentEmail}")
-    if( currentEmail.contains("igt.com") && !notIncluded.contains( currentEmail ) && directory != 11100 ){
+    if( currentEmail.contains("domain.com") && !notIncluded.contains( currentEmail ) && directory != 11100 ){
         String newEmail = currentEmail.split('@')[0].concat( "@newDomain.com" )
         ApplicationUser modifiedUser = us.newUserBuilder( user ).emailAddress( newEmail ).build()
         um.updateUser( modifiedUser )
