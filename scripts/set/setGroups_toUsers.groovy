@@ -1,3 +1,5 @@
+//With this script we add some users to similar or differents groups.
+
 import com.atlassian.jira.user.ApplicationUser
 import com.atlassian.jira.component.ComponentAccessor
 import com.atlassian.jira.security.roles.ProjectRole
@@ -27,7 +29,7 @@ for (int i = 0; i < users_info.length - 1; i++){
         roles = getRoles(groups)
         user_projects = getGroups(roles, projects)
         addUsersToGroups(username, user_projects)
-        log.warn("indice ${i}: ${username}, i ruoli sono ${roles} nei progetti ${projects} e i gruppi aggiunti sono ${user_projects}")       
+        log.warn("index ${i}: ${username}, the roles are: ${roles}, and they're present in ${projects}. The groups are: ${user_projects}")       
     }
    
 }
@@ -41,11 +43,12 @@ private ArrayList <String> getGroups(ArrayList<String> roles, String [] projects
         String pName = getProjects(projects[i])
         def currentProject = projectManager.getProjectObjByName(pName)
         String key = currentProject.getKey()
-        for( int j = 0; j < roles.size(); j++){
-    
+        
+		for( int j = 0; j < roles.size(); j++){
             ProjectRole role = projectRoleManager.getProjectRole(roles[j])
             ProjectRoleActors actors = projectRoleManager.getProjectRoleActors (role, currentProject)
-            actors.roleActors.each{ actor ->
+            
+			actors.roleActors.each{ actor ->
                 if(roles[j] == "Developers"){
                     if(actor.getParameter() == "${key}_DevOps"){
 						groups.add(actor.getParameter()) 
