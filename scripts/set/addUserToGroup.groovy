@@ -1,3 +1,5 @@
+//With this script we add some users to specific groups present in JIRA.
+
 import com.atlassian.jira.security.groups.GroupManager
 import com.atlassian.jira.user.ApplicationUser
 import com.atlassian.jira.component.ComponentAccessor
