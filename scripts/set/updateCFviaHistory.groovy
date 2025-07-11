@@ -19,7 +19,7 @@ ChangeHistoryManager chm = ComponentAccessor.getChangeHistoryManager()
 
 String id_textField = "customfield_11207"
 def cf_textField = cfm.getCustomFieldObject( id_textField )
-ApplicationUser gmt_user = Users.getByName("gmt_jirauser")
+ApplicationUser gmt_user = Users.getByName("admin_user")
 
 IssueFieldConstants constants = new IssueFieldConstants()
 
