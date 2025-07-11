@@ -17,7 +17,6 @@ import com.atlassian.jira.security.roles.*
 import com.atlassian.jira.bc.issue.search.SearchService
 import com.atlassian.jira.jql.parser.JqlQueryParser
 import com.atlassian.jira.issue.search.SearchQuery
-import com.atlassian.jira.jql.parser.JqlQueryParser
 import com.atlassian.jira.jql.query.IssueIdCollector
 import com.atlassian.query.Query
 import com.atlassian.jira.application.ApplicationAuthorizationService
@@ -43,6 +42,7 @@ builder.append("<table border = 1><tr><td><b>Active</b></td><td><b>Full Name</b>
       SearchQuery searchQuery = SearchQuery.create(query, user)
       IssueIdCollector collector = new IssueIdCollector()
       int issueCount = searchService.searchCount(user, query) as int
+       
       return issueCount   
     }
 
