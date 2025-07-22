@@ -1,0 +1,71 @@
+//get members of each role in all the projects (Active and archived projects)
+
+import com.atlassian.jira.user.ApplicationUser
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.security.roles.ProjectRole
+import com.atlassian.jira.security.roles.ProjectRoleActors
+import com.atlassian.jira.project.ProjectManager
+import com.atlassian.jira.security.roles.ProjectRoleManager
+import com.atlassian.jira.scheme.Scheme
+
+
+    StringBuilder builder = new StringBuilder()
+	builder.append("<table border = 1><tr><td><b>Archive</b></td><td><b>Project Name</b></td><td><b>Project Key</b></td><td><b>Role</b></td><td><b>Member</b></td><td><b>Type</b></td></tr>")
+
+	def projectRoleManager = ComponentAccessor.getComponent(ProjectRoleManager)
+    def userManager = ComponentAccessor.getUserManager()
+	ProjectManager projectManager = ComponentAccessor.getProjectManager()
+    def activeProjects = projectManager.getProjectObjects()
+    def archivedProjects = projectManager.getArchivedProjects()
+    def roles = projectRoleManager.getProjectRoles()
+    def projects = activeProjects + archivedProjects
+
+	def groupsIntersect = ["Generic_Administrators", "Bet&Dig_Customer", "Gaming_Customer", "CCLO_Customer", "AFC_Customer", "OTH_Customer", "O&T_Demand", "BET_Developers", 
+                           "DIG_Developers", "Gaming_Developers", "SAP_Developers", "BI_Developers", "BIP_Developers", "BET_HDU", "DIG_HDU", "Gaming_HDU", "Program_PM", 
+                           "Product_PM", "Project Member", "O&T_Tester", "Program_Users", "Product_Users", "Operations_Users", "Sys.DBA_Operations", "Sys.DBA_PM", 
+                           "Sys.Ops_Operations", "Sys.Ops_PM", "NOC_Operations", "NOC_PM", "Generic_Vendor", "jira-administrators", "jira-software-users"]
+    
+    Map <String, HashMap <String, ArrayList<String>>> projectInfo = new HashMap <String, HashMap <String, ArrayList<String>>>()
+    for (int i = 0; i < projects.size(); i++){
+        def currentProject = projects[i]
+    	Map <String, ArrayList<String>> roleGroups = new HashMap <String, ArrayList<String>>()
+        
+        String currentKey = currentProject.getKey()
+        for( int j = 0; j < roles.size(); j++){
+    		ArrayList <String> groups = new ArrayList <String>()
+            
+            ProjectRole currentRole = roles[j]
+            ProjectRoleActors actors = projectRoleManager.getProjectRoleActors (currentRole, currentProject)
+
+            actors.roleActors.each{ actor ->
+                def us = actor.getUsers()
+                builder.append("<tr><td>${currentProject.archived}</td><td>${currentProject.name}</td><td>${currentKey}</td>")
+                
+                if(actor.getType().contains("atlassian-group-role-actor") ){// && groupsIntersect.contains(actor.getParameter())){
+                    
+                    builder.append("<td>${roles[j]}<td>${actor.getParameter()}</td>")
+                    groups.add(actor.getParameter())
+                    builder.append("<td>Group</td></tr>")
+                }else{
+                    for(def u : us){
+                        if(u.getKey().toString().equals(actor.getParameter())){
+                            builder.append("<td>${roles[j]}<td>${u.getUsername()}</td>")
+                            groups.add(actor.getParameter())
+                            builder.append("<td>User</td></tr>")
+                        }   
+                    }
+                }
+
+            }
+            if(groups.size() > 0){
+            	roleGroups.put(currentRole.getName(), groups)
+            }
+        
+        }
+    	projectInfo.put(currentKey, roleGroups)
+    }
+    
+    
+                builder.append("</table>")
+    
+    return builder
